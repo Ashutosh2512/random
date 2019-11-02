@@ -1,0 +1,33 @@
+post:
+{
+  "creatorUserName":"ashutosh2512",
+  "topicId":"how is Data saved in mongoDB",
+  "content":"I am the post related to topic of how is Data save in mongoDB."
+}
+
+comment:
+{
+    "content":"I am content",
+    "creatorUserName":"I am the creator of the comment"
+}
+
+Question:
+
+{
+  "topic":"I am the topic of the question.",
+  "content":"I am the content of the question.",
+  "creatorUserName":"userName"
+}
+Profile:
+{
+    "id":"userName",
+    "emailId":"UserMail",
+	"dob":"2019-10-13T19:58:52.935+0000",
+	"contact":"mobileNo",
+	"name":"name of the user"
+}
+likesdislikes
+{
+	creatorUserNameAndtopicId:""
+}
+
