@@ -1,6 +1,11 @@
 package com.Ashutosh.web.CommunityProject.Resources;
 
+import java.util.ArrayList;
+
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.hateoas.Link;
+import org.springframework.hateoas.Resource;
+import org.springframework.hateoas.mvc.ControllerLinkBuilder;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -21,19 +26,31 @@ public class QuestionController {
 	private questionServiceImpl qsi;
 	
 	@PostMapping
-	public Question saveQuestion(@RequestBody Question q) {
-		return qsi.saveQuestion(q);
+	public Resource<Question> saveQuestion(@RequestBody Question q) {
+		Question q1=qsi.saveQuestion(q);
+		Resource<Question> questionResource=new Resource<Question>(q1);
+		Link link=ControllerLinkBuilder.linkTo((ControllerLinkBuilder.methodOn(QuestionController.class).getQuestion(q.getTopic()))).withSelfRel();
+		questionResource.add(link);
+		return questionResource;
 	}
 	@PutMapping
-	public Question updateQuestion(@RequestBody Question q) {
-		return qsi.updateQuestion(q);
+	public Resource<Question> updateQuestion(@RequestBody Question q) {
+		Question q1=qsi.saveQuestion(q);
+		Resource<Question> questionResource=new Resource<Question>(q1);
+		Link link=ControllerLinkBuilder.linkTo((ControllerLinkBuilder.methodOn(QuestionController.class).getQuestion(q.getTopic()))).withSelfRel();
+		questionResource.add(link);
+		return questionResource;
 	}
 	/*
 	 * This method saves as well as updates the post if it already exists.
 	 */
 	@PutMapping(path="{topicId}/posts")
-	public Post addPost(@RequestBody Post p,@PathVariable(name="topicId") String topicId) {
-		return qsi.addAnswer(topicId, p);
+	public Resource<Post> addPost(@RequestBody Post p,@PathVariable(name="topicId") String topicId) {
+		p=qsi.addAnswer(topicId, p);
+		Link creatorLink=ControllerLinkBuilder.linkTo(ControllerLinkBuilder.methodOn(ProfileController.class).getProfile(p.getCreatorUserName())).withRel("creator");
+		Resource<Post> postResource=new Resource<Post>(p);
+		p.add(creatorLink);
+		return postResource;
 	}
 	/*
 	 * this method is used to update the likes of the post
@@ -49,9 +66,23 @@ public class QuestionController {
 	public Integer postDislikesUpdate(@RequestBody String dislikingperson,@PathVariable(name="topicId") String topicId,@PathVariable(name="userName") String userName) {
 		return qsi.updatePostDislike(topicId, userName,dislikingperson);
 	}
+	@PutMapping(path="{topicId}/tags")
+	public ArrayList<String> updateQuestionTag(@PathVariable(name="topicId") String topic,@RequestBody ArrayList<String> tag){
+		return qsi.updateQuestionTag(tag, topic);
+	}
 	@GetMapping(path="{topic}")
-	public Question getQuestion(@PathVariable(name="topic") String topic) {
-		return qsi.getQuestion(topic);
+	public Resource<Question> getQuestion(@PathVariable(name="topic") String topic) {
+		Question q= qsi.getQuestion(topic);
+		for(Post p:q.getAnswers()) {
+			Link link=ControllerLinkBuilder.linkTo(ControllerLinkBuilder.methodOn(ProfileController.class).getProfile(p.getCreatorUserName())).withRel("creator");
+			p.add(link);
+		}
+		Resource<Question> resource=new Resource<Question>(q);
+		Link link=ControllerLinkBuilder.linkTo((ControllerLinkBuilder.methodOn(QuestionController.class).getQuestion(q.getTopic()))).withSelfRel();
+		Link creatorLink=ControllerLinkBuilder.linkTo(ControllerLinkBuilder.methodOn(ProfileController.class).getProfile(q.getCreatorUserName())).withRel("creator");
+		resource.add(link);
+		resource.add(creatorLink);
+		return resource;
 	}
 	@GetMapping(path="{topicId}/posts/{postCreatorName}/likes")
 	public Integer getLikes(@PathVariable(name="topicId") String topicId,@PathVariable(name="postCreatorName") String userName) {

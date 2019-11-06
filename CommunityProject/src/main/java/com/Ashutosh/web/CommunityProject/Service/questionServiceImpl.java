@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.hateoas.Resource;
 import org.springframework.stereotype.Service;
 
 import com.Ashutosh.web.CommunityProject.RepoHandler.ProfileRepository;
@@ -105,13 +106,13 @@ public class questionServiceImpl {
 	 */
 	public Question getQuestion(String topic) {
 		Optional<Question> optQuestion=qr.findById(topic);
+		Question q=null;
 		if(optQuestion.isPresent()) {
-			Question q=optQuestion.get();
+			q=optQuestion.get();
 			q.setViews(q.getViews()+1);
 			qr.save(q);
-			return q;
-		}
-		return null;
+		}		
+		return q;
 	}
 	public Integer getPostLikes(String topicId,String userName) {
 		return ldsi.getLikes(topicId, userName);
@@ -155,6 +156,16 @@ public class questionServiceImpl {
 		userAnswers.remove(topicId);
 		userProfile.setAnswers(userAnswers);
 		pr.save(userProfile);
+	}
+	public ArrayList<String> updateQuestionTag(ArrayList<String> tags,String topic){
+		Optional<Question> optQuestion=qr.findById(topic);
+		Question q=null;
+		if(optQuestion.isPresent()) {
+			q=optQuestion.get();
+			q.setTags(tags);
+			qr.save(q);
+		}
+		return tags;
 	}
 
 }

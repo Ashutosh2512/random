@@ -1,8 +1,12 @@
 package com.Ashutosh.web.CommunityProject.Resources;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.hateoas.Link;
+import org.springframework.hateoas.Resource;
+import org.springframework.hateoas.mvc.ControllerLinkBuilder;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -23,17 +27,29 @@ public class ProfileController {
 	private ProfileServiceImpl prsi;
 	
 	@PostMapping
-	public Profile saveProfile(@RequestBody Profile p) {
-		return prsi.saveProfile(p);
+	public Resource<Profile> saveProfile(@RequestBody Profile p) {
+		p=prsi.saveProfile(p);
+		Resource<Profile> profileResource=new Resource<Profile>(p);
+		Link link=ControllerLinkBuilder.linkTo(ControllerLinkBuilder.methodOn(ProfileController.class).getProfile(p.getId())).withSelfRel();
+	    profileResource.add(link);
+	    return profileResource;
 	}
 	
 	@PutMapping
-	public Profile updateProfile(@RequestBody Profile p) {
-		return prsi.updateprofile(p);
+	public Resource<Profile> updateProfile(@RequestBody Profile p) {
+		p=prsi.updateprofile(p);
+		Resource<Profile> profileResource=new Resource<Profile>(p);
+		Link link=ControllerLinkBuilder.linkTo(ControllerLinkBuilder.methodOn(ProfileController.class).getProfile(p.getId())).withSelfRel();
+	    profileResource.add(link);
+	    return profileResource;
 	}
 	@GetMapping(path="{profileId}")
-	public Profile getProfile(@PathVariable(name="profileId") String id) {
-		return prsi.getProfile(id);
+	public Resource<Profile> getProfile(@PathVariable(name="profileId") String id) {
+		Profile p=prsi.getProfile(id);
+		Resource<Profile> profileResource=new Resource<Profile>(p);
+		Link profileLink=ControllerLinkBuilder.linkTo(ControllerLinkBuilder.methodOn(ProfileController.class).getProfile(id)).withSelfRel();
+		profileResource.add(profileLink);
+		return profileResource;
 	}
 	@GetMapping
 	public List<Profile> getAllProfiles(){
@@ -64,5 +80,8 @@ public class ProfileController {
 	public String updateEmailId(@RequestBody String emailId,@PathVariable(name="profileId") String profileId) {
 		return prsi.updateEmailId(profileId, emailId);
 	}
-	
+	@PutMapping(path="{profileId}/tags")
+	public ArrayList<String> updateTag(@PathVariable(name="profileId") String userName,@RequestBody ArrayList<String> tags){
+		return prsi.updateProfileTags(tags, userName);
+	}
 }

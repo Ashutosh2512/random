@@ -67,4 +67,14 @@ public class ProfileServiceImpl {
 		this.updateprofile(p);
 		return emailId;
 	}
+	public ArrayList<String> updateProfileTags(ArrayList<String> tags,String userName){
+		Optional<Profile> optProfile=pr.findById(userName);
+		Profile p=null;
+		if(optProfile.isPresent()) {
+			p=optProfile.get();
+			p.setTags(tags);
+			pr.save(p);
+		}
+		return tags;
+	}
 }

@@ -2,18 +2,19 @@ package com.Ashutosh.web.CommunityProject.model;
 
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashMap;
-
 import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
+import org.springframework.hateoas.ResourceSupport;
 
 
 @Document(collection="Profiles")
-public class Profile implements ProfileInterface{
+public class Profile implements ProfileInterface {
 	/*
 	 * id is the userName, as it is unique.
 	 */
+	@Indexed
 	@Id
 	private String id;
 	@Field(value="emailId")
@@ -35,7 +36,8 @@ public class Profile implements ProfileInterface{
 	private ArrayList<String> answers;
 	@Field(value="profileViews")
 	private Integer profileViews;
-	
+	@Field(value="tags")
+	private ArrayList<String> tags;
 	
 	
 	public Profile(String username, String emailId, String name, String contact, Date dob) {
@@ -47,6 +49,7 @@ public class Profile implements ProfileInterface{
 		this.dob = dob;
 		this.questions = new ArrayList<String>();
 		this.answers = new ArrayList<String>();
+		this.tags=new ArrayList<String>();
 		this.profileViews = 0;
 	}
 	
@@ -54,9 +57,15 @@ public class Profile implements ProfileInterface{
 		this.profileViews=0;
 		this.answers=new ArrayList<String>();
 		this.questions=new ArrayList<String>();
+		this.tags=new ArrayList<String>();
 	}
 
-
+	public ArrayList<String> getTags(){
+		return this.tags;
+	}
+	public void setTags(ArrayList<String> tags) {
+		this.tags=tags;
+	}
 
 	public String getId() {
 		return id;

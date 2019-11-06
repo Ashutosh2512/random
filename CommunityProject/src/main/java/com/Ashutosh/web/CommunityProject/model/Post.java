@@ -1,13 +1,14 @@
 package com.Ashutosh.web.CommunityProject.model;
 
-import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
-import org.springframework.data.annotation.Id;
-import org.springframework.data.mongodb.core.mapping.Document;
-import org.springframework.data.mongodb.core.mapping.Field;
+import org.springframework.data.annotation.AccessType;
+import org.springframework.data.annotation.AccessType.Type;
+import org.springframework.hateoas.Link;
+import org.springframework.hateoas.ResourceSupport;
 
-public class Post implements PostInterface {
+public class Post extends ResourceSupport implements PostInterface {
 
 
 	private String creatorUserName;
@@ -37,6 +38,12 @@ public class Post implements PostInterface {
 		this.likes=0;
 		this.dislikes=0;
 	}
+	@AccessType(Type.PROPERTY)
+    public void setLinks(List<Link> links) {
+        List<Link> actual = super.getLinks();
+        actual.clear();
+        actual.addAll(links);
+    }
     @Override
 	public String getCreatorUserName() {
 		return creatorUserName;
