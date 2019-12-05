@@ -40,14 +40,19 @@ public class Question implements QuestionInterface{
 		super();
 		this.topic = addHyphen(topic);
 		this.content = content;
-		this.tags=tags;
 		this.answers = new ArrayList<Post>();
 		this.date = new Date();
 		this.views = 0;
 		this.creatorUserName = creatorUserName;
+		this.tags=new ArrayList<String>();
+		int l=tags.size();
+		for(int i=0;i<l;i++) {
+			this.tags.add(tags.get(i));
+		}
 	}
+	
 	/*
-	 * This mehod is used to replace space with hyphen
+	 * This method is used to replace space with hyphen
 	 */
 	public String addHyphen(String topic) {
 		return topic.replace(" ","-");

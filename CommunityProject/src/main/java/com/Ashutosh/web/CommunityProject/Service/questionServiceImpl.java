@@ -8,14 +8,18 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.hateoas.Resource;
 import org.springframework.stereotype.Service;
 
+import com.Ashutosh.web.CommunityProject.RepoHandler.PostCommentsRepository;
 import com.Ashutosh.web.CommunityProject.RepoHandler.ProfileRepository;
 import com.Ashutosh.web.CommunityProject.RepoHandler.QuestionRepository;
 import com.Ashutosh.web.CommunityProject.model.Post;
+import com.Ashutosh.web.CommunityProject.model.PostComments;
 import com.Ashutosh.web.CommunityProject.model.Profile;
 import com.Ashutosh.web.CommunityProject.model.Question;
 
 @Service
 public class questionServiceImpl {
+	@Autowired
+	private PostCommentsRepository pcr;
 	@Autowired
 	private QuestionRepository qr; 
 	
@@ -50,6 +54,8 @@ public class questionServiceImpl {
 		ArrayList<Post> answers=q.getAnswers();
 		if(answers.contains(p)) {
 			answers.remove(p);
+			//removing the CommentList
+			pcr.deleteById(topicId+"-"+p.getCreatorUserName());
 		}
 		answers.add(p);
 		q.setAnswers(answers);
@@ -64,6 +70,10 @@ public class questionServiceImpl {
 			pr.save(profile);
 		}
 		ldsi.addNewPost(topicId, p.getCreatorUserName());
+		//creating a new CommentList for the post
+		PostComments pc=new PostComments(topicId+"-"+p.getCreatorUserName());
+		pcr.save(pc);
+		
 		return p;
 	}
 	public Integer updatePostLike(String topicId,String userName,String likingperson) {
@@ -156,6 +166,8 @@ public class questionServiceImpl {
 		userAnswers.remove(topicId);
 		userProfile.setAnswers(userAnswers);
 		pr.save(userProfile);
+		//removing the CommentList
+		pcr.deleteById(topicId+"-"+userName);
 	}
 	public ArrayList<String> updateQuestionTag(ArrayList<String> tags,String topic){
 		Optional<Question> optQuestion=qr.findById(topic);

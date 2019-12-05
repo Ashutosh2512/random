@@ -76,6 +76,11 @@ public class QuestionController {
 		for(Post p:q.getAnswers()) {
 			Link link=ControllerLinkBuilder.linkTo(ControllerLinkBuilder.methodOn(ProfileController.class).getProfile(p.getCreatorUserName())).withRel("creator");
 			p.add(link);
+			/*
+			 * adding the link for comments of the post
+			 */
+			Link PostCommentLink=ControllerLinkBuilder.linkTo(ControllerLinkBuilder.methodOn(PostCommentsController.class).getAllComments(p.getTopicId()+"-"+p.getCreatorUserName())).withRel("comments");
+			p.add(PostCommentLink);
 		}
 		Resource<Question> resource=new Resource<Question>(q);
 		Link link=ControllerLinkBuilder.linkTo((ControllerLinkBuilder.methodOn(QuestionController.class).getQuestion(q.getTopic()))).withSelfRel();
